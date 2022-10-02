@@ -1,5 +1,3 @@
-// Generated using webpack-cli https://github.com/webpack/webpack-cli
-
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -38,7 +36,7 @@ const config = {
                     },
                 },
             },
-            { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+            { test: /\.css$/, use: ['style-loader', 'css-loader', 'postcss-loader'] },
             {
                 test: /\.scss$/,
                 use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
