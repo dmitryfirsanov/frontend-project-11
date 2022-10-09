@@ -2,13 +2,12 @@ import './styles.scss';
 import * as yup from 'yup';
 import onChange from 'on-change';
 import render from './view/watcher.js';
+import isEmpty from 'lodash/isEmpty.js';
 
 const state = {
   valid: true,
-  fields: {
-    url: '',
-  },
-  urls: [],
+  url: '',
+  listOfFeeds: [],
   errors: [],
 };
 
@@ -23,25 +22,29 @@ const watchedState = onChange(state, (path, value) => {
   }
 });
 
-const schema = yup.string().url().min(1);
-
 input.addEventListener('input', (e) => {
-  state.fields.url = e.target.value;
+  state.url = e.target.value;
 });
 
-submitButton.addEventListener('click', async (e) => {
+submitButton.addEventListener('click', (e) => {
   e.preventDefault();
-  state.errors = await schema.validate(state.fields.url)
-    .catch((err) => err.errors);
 
-  if (state.errors === state.fields.url && !state.urls.includes(state.fields.url)) {
-    watchedState.valid = true;
-    state.urls.push(state.fields.url);
-  } else {
-    watchedState.valid = false;
-  }
+  const schemaUrl = yup.string().url().min(1).notOneOf(state.listOfFeeds);
+  schemaUrl.validate(state.url)
+    .catch((err) => {
+      state.errors = err.errors;
+    })
+    .then(() => {
+      if (isEmpty(state.errors)) {
+        state.listOfFeeds.push(state.url);
+        watchedState.valid = true;
+      }
+      else watchedState.valid = false;
 
-  state.errors = [];
-  console.log(state.urls);
-  render(state);
+      render(state);
+    })
+    .then(() => {
+      state.errors = [];
+      state.url = '';
+    })
 });
