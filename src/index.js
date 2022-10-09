@@ -1,8 +1,8 @@
 import './styles.scss';
 import * as yup from 'yup';
 import onChange from 'on-change';
-import render from './view/watcher.js';
 import isEmpty from 'lodash/isEmpty.js';
+import render from './view/watcher.js';
 
 const state = {
   valid: true,
@@ -38,13 +38,12 @@ submitButton.addEventListener('click', (e) => {
       if (isEmpty(state.errors)) {
         state.listOfFeeds.push(state.url);
         watchedState.valid = true;
-      }
-      else watchedState.valid = false;
+      } else watchedState.valid = false;
 
       render(state);
     })
     .then(() => {
       state.errors = [];
       state.url = '';
-    })
+    });
 });
