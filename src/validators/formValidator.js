@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 const validateForm = (i18next, content, listOfFeeds) => {
   yup.setLocale({
-    mixed: { 
+    mixed: {
       notOneOf: i18next.t('validation.errors.errorUniqRSSUrl'),
     },
     string: {
