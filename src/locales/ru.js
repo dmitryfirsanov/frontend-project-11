@@ -7,7 +7,7 @@ export default {
           errorUniqRSSUrl: 'RSS уже существует',
           errorRequared: 'Не должно быть пустым',
         },
-        isValid: 'RSS загружается',
+        isValid: 'RSS успешно загружен',
       },
     },
   },
