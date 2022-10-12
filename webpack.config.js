@@ -8,7 +8,7 @@ const config = {
         maxEntrypointSize: 512000,
         maxAssetSize: 512000
     },
-    entry: "./src/index.js",
+    entry: "./src/runApp.js",
     output: {
         path: path.resolve(__dirname, "dist"),
     },
