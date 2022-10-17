@@ -1,9 +1,9 @@
 import onChange from 'on-change';
-import renderFeedbackMessage from '../renders/renderFeedbackMessage.js';
+import renderFeedback from '../renders/renderFeedback.js';
 
 export default (state) => {
   const wathcer = onChange(state, (path, isValid) => {
-    renderFeedbackMessage(isValid, state.feedback);
+    renderFeedback(isValid, state.feedback);
   });
 
   return wathcer;
