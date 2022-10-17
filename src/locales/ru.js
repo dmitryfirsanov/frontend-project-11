@@ -7,7 +7,18 @@ export default {
           errorUniqRSSUrl: 'RSS уже существует',
           errorRequared: 'Не должно быть пустым',
         },
-        isValid: 'RSS успешно загружен',
+      },
+      loading: {
+        errors: {
+          errorNetWork: 'Ошибка сети',
+          errorResource: 'Ресурс не содержит валидный RSS',
+        },
+        isLoaded: 'RSS успешно загружен',
+      },
+      content: {
+        feeds: 'Фиды',
+        topics: 'Посты',
+        view: 'Просмотр',
       },
     },
   },
