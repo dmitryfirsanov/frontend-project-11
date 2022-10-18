@@ -18,6 +18,7 @@ promise
     const state = {
       i18next: i18Instance,
       feedback: '',
+      resources: [],
       feeds: [],
       isValid: null,
       isLoaded: null,
