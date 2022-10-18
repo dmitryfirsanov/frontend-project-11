@@ -10,15 +10,13 @@ const loadRss = (url, state) => {
   axios.get(proxy.toString())
     .catch(() => {
       state.feedback = state.i18n.t('loading.errors.errorNetWork');
-      throw new Error();
     })
     .then((response) => parserRss(response))
     .catch(({ message }) => {
       if (message === 'errorParsing') state.feedback = state.i18n.t('loading.errors.errorResource');
-      throw new Error();
     })
     .then((parsedRss) => {
-      // продолжение следует
+      
     });
 };
 

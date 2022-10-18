@@ -20,6 +20,7 @@ promise
       feedback: '',
       feeds: [],
       isValid: null,
+      isLoaded: null,
     };
 
     return state;
