@@ -1,29 +1,33 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
 import parserRss from '../parsers/parserRss';
+import updateRss from './updateRss.js';
 
-const loadRss = (url, state, watcher) => {
-  const proxy = new URL(`https://allorigins.hexlet.app/get?url=${url}`);
-  proxy.searchParams.set('disableCache', true);
+const loadRss = (watcherRss, watcherUpdateRss, url, state) => {
+  const proxy = new URL(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`);
 
-  axios.get(proxy.toString())
+  axios.get(proxy)
     .catch(() => {
       state.feedback = state.i18next.t('loading.errors.errorNetWork');
-      watcher.isLoaded = false;
+      watcherRss.isLoaded = false;
       throw new Error();
     })
     .then((response) => parserRss(response))
-    .then((parsedRss) => {
-      console.log(state);
-      state.resources.push(url);
-      state.feeds.push(parsedRss);
-      state.feedback = state.i18next.t('loading.isLoaded');
-      watcher.isLoaded = true;
-    })
-    .catch(({ message }) => {
-      if (message === 'parsing error') state.feedback = state.i18next.t('loading.errors.errorResource');
-      watcher.isLoaded = false;
+    .catch(() => {
+      state.feedback = state.i18next.t('loading.errors.errorResource');
+      watcherRss.isLoaded = false;
       throw new Error();
+    })
+    .then(({ feed, topics }) => {
+      state.resources.push(url);
+      state.feeds.push(feed);
+      state.topics.push(...topics);
+      state.feedback = state.i18next.t('loading.isLoaded');
+      watcherRss.isLoaded = true;
+      console.log(state);
+    })
+    .then(() => {
+      updateRss(watcherUpdateRss, state);
     });
 };
 
