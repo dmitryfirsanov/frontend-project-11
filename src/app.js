@@ -1,9 +1,8 @@
 import btnAddRssURL from './handlers/btnAddRssURL.js';
-import watcherValidationURL from './view/watchers';
+import { watcherRss, watcherUpdateRss } from './view/watchers';
 
 const app = (state) => {
-  const watcher = watcherValidationURL(state);
-  btnAddRssURL(state, watcher);
+  btnAddRssURL(watcherRss(state), watcherUpdateRss(state), state);
 };
 
 export default app;
