@@ -20,8 +20,10 @@ promise
       feedback: '',
       resources: [],
       feeds: [],
+      topics: [],
       isValid: null,
       isLoaded: null,
+      isUpdated: null,
     };
 
     return state;
