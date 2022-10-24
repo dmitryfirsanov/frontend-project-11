@@ -28,7 +28,6 @@ const updateRss = (state) => {
           const newTopics = differenceWith(topics, state.rssContent.topics, isEqual);
           if (isEmpty(newTopics)) return;
           state.rssContent.topics.unshift(...newTopics);
-          console.log(state);
           renderNewTopics(newTopics, state);
         });
       })
