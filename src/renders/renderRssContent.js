@@ -16,7 +16,7 @@ const buildBlockOfFeeds = (state) => {
   const blockContent = document.createElement('ul');
   blockContent.classList.add('list-group', 'border-0', 'rounded-0');
 
-  state.feeds.forEach(({ title, description }) => {
+  state.rssContent.feeds.forEach(({ title, description }) => {
     const feed = document.createElement('li');
     feed.classList.add('list-group-item', 'border-0', 'border-end-0');
 
@@ -41,7 +41,7 @@ const buildBlockOfPosts = (state) => {
   const blockContent = document.createElement('ul');
   blockContent.classList.add('list-group', 'border-0', 'rounded-0');
 
-  state.topics.forEach((topic) => {
+  state.rssContent.topics.forEach((topic) => {
     const id = uniqueId();
     const post = document.createElement('li');
     post.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
