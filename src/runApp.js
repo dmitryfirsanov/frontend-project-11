@@ -18,12 +18,13 @@ promise
     const state = {
       i18next: i18Instance,
       feedback: '',
-      resources: [],
-      feeds: [],
-      topics: [],
       isValid: null,
-      isLoaded: null,
-      isUpdated: null,
+      rssContent: {
+        isLoaded: null,
+        resources: [],
+        feeds: [],
+        topics: [],
+      },
     };
 
     return state;
