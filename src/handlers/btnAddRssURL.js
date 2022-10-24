@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
 import validateForm from '../validators/formValidator.js';
 import loadRss from './loadRss.js';
+import { watcherFeedback } from '../view/watchers.js';
 
-export default (watcherRss, watcherUpdateRss, state) => {
+export default (state) => {
   const form = document.querySelector('.rss-form');
   const input = document.querySelector('#url-input');
 
@@ -11,14 +12,14 @@ export default (watcherRss, watcherUpdateRss, state) => {
 
     const content = input.value;
 
-    validateForm(state.i18next, content, state.resources)
+    validateForm(state.i18next, content, state.rssContent.resources)
       .catch((error) => {
         state.feedback = error.message;
-        watcherRss.isValid = false;
+        watcherFeedback(state).isValid = false;
         throw new Error();
       })
       .then(() => {
-        loadRss(watcherRss, watcherUpdateRss, content, state);
+        loadRss(content, state);
       });
   });
 };
