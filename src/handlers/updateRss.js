@@ -2,13 +2,14 @@
 import axios from 'axios';
 import { differenceWith, isEqual, isEmpty } from 'lodash';
 import parserRSS from '../parsers/parserRss.js';
+import renderNewTopics from '../renders/renderNewTopics.js';
 
-const updateRss = (watcherUpdateRss, state) => {
+const updateRss = (state) => {
   setTimeout(() => {
     const proxy = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
 
     // eslint-disable-next-line arrow-body-style
-    const promises = state.resources.map((resource) => {
+    const promises = state.rssContent.resources.map((resource) => {
       return axios.get(`${proxy}${resource}`)
         .catch(() => {
           state.feedback = state.i18next.t('loading.errors.errorNetWork');
@@ -24,14 +25,18 @@ const updateRss = (watcherUpdateRss, state) => {
     Promise.all(promises)
       .then((parsedRss) => {
         parsedRss.forEach(({ topics }) => {
-          const newTopics = differenceWith(state.topics, topics, isEqual);
+          const newTopics = differenceWith(topics, state.rssContent.topics, isEqual);
           if (isEmpty(newTopics)) return;
-          console.log(newTopics);
-          watcherUpdateRss.topics.push(...newTopics);
+          state.rssContent.topics.unshift(...newTopics);
+          console.log(state);
+          renderNewTopics(newTopics, state);
         });
       })
       .then(() => {
-        updateRss(watcherUpdateRss, state);
+        updateRss(state);
+      })
+      .catch(() => {
+        updateRss(state);
       });
   }, 5000);
 };
