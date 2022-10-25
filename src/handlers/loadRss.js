@@ -2,6 +2,7 @@
 import axios from 'axios';
 import parserRss from '../parsers/parserRss';
 import { watcherLoadingRss } from '../view/watchers.js';
+import getIdForTopics from './getIdForTopics';
 import updateRss from './updateRss';
 
 const loadRss = (url, state) => {
@@ -23,6 +24,7 @@ const loadRss = (url, state) => {
       state.rssContent.resources.unshift(url);
       state.rssContent.feeds.unshift(feed);
       state.rssContent.topics.unshift(...topics);
+      getIdForTopics(state.rssContent.topics);
       state.feedback = state.i18next.t('loading.isLoaded');
       watcherLoadingRss(state).isLoaded = true;
     })

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { differenceWith, isEqual, isEmpty } from 'lodash';
 import parserRSS from '../parsers/parserRss.js';
+import getIdForTopics from './getIdForTopics.js';
 import { renderPosts } from '../renders/renderRssContent.js';
 
 const updateRss = (state) => {
@@ -25,9 +26,16 @@ const updateRss = (state) => {
     Promise.all(promises)
       .then((parsedRss) => {
         parsedRss.forEach(({ topics }) => {
-          const newTopics = differenceWith(topics, state.rssContent.topics, isEqual);
-          if (isEmpty(newTopics)) return;
+          const oldTopicsLinks = state.rssContent.topics.map((topic) => topic.link);
+          const allTopicsLinks = topics.map((topic) => topic.link);
+          const newTopicsLinks = differenceWith(allTopicsLinks, oldTopicsLinks, isEqual);
+          if (isEmpty(newTopicsLinks)) return;
+
+          const newTopics = newTopicsLinks
+            .map((link) => topics.find((topic) => topic.link === link));
+
           state.rssContent.topics.unshift(...newTopics);
+          getIdForTopics(state.rssContent.topics);
           renderPosts(state.rssContent.topics, state);
         });
       })
