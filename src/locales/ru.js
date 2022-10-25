@@ -17,7 +17,7 @@ export default {
       },
       content: {
         feeds: 'Фиды',
-        topics: 'Посты',
+        posts: 'Посты',
         view: 'Просмотр',
       },
     },
