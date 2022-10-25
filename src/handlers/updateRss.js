@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { differenceWith, isEqual, isEmpty } from 'lodash';
 import parserRSS from '../parsers/parserRss.js';
-import renderNewTopics from '../renders/renderNewTopics.js';
+import { renderPosts } from '../renders/renderRssContent.js';
 
 const updateRss = (state) => {
   setTimeout(() => {
@@ -28,7 +28,7 @@ const updateRss = (state) => {
           const newTopics = differenceWith(topics, state.rssContent.topics, isEqual);
           if (isEmpty(newTopics)) return;
           state.rssContent.topics.unshift(...newTopics);
-          renderNewTopics(newTopics, state);
+          renderPosts(state.rssContent.topics, state);
         });
       })
       .then(() => {
