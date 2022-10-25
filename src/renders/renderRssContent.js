@@ -1,5 +1,3 @@
-import { uniqueId } from 'lodash';
-
 export const renderPosts = (topics, state) => {
   const cardName = document.querySelector('.posts .card-body h2');
   cardName.textContent = state.i18next.t('content.posts');
@@ -8,13 +6,12 @@ export const renderPosts = (topics, state) => {
   listOfPosts.innerHTML = '';
 
   topics.forEach((topic) => {
-    const id = uniqueId();
     const post = document.createElement('li');
 
     post.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     post.innerHTML = `
-    <a class="fw-bold" href=${topic.link} data-id=${id} target="_blank" rel="noopener noreferrer">${topic.title}</a>
-    <button type="button" class="btn btn-outline-primary btn-sm" data-id="${id}" data-bs-toggle="modal" data-bs-target="#modal">${state.i18next.t('content.view')}</button>
+    <a class="fw-bold" href=${topic.link} data-id=${topic.id} target="_blank" rel="noopener noreferrer">${topic.title}</a>
+    <button type="button" class="btn btn-outline-primary btn-sm" data-id="${topic.id}" data-bs-toggle="modal" data-bs-target="#modal">${state.i18next.t('content.view')}</button>
     `;
 
     listOfPosts.append(post);
