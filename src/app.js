@@ -1,7 +1,7 @@
-import btnAddRssURL from './handlers/btnAddRssURL.js';
+import addRss from './handlers/addRss.js';
 
 const app = (state) => {
-  btnAddRssURL(state);
+  addRss(state);
 };
 
 export default app;
