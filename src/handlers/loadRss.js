@@ -20,8 +20,8 @@ const loadRss = (url, state) => {
       throw new Error();
     })
     .then(({ feed, topics }) => {
-      state.rssContent.resources.push(url);
-      state.rssContent.feeds.push(feed);
+      state.rssContent.resources.unshift(url);
+      state.rssContent.feeds.unshift(feed);
       state.rssContent.topics.unshift(...topics);
       state.feedback = state.i18next.t('loading.isLoaded');
       watcherLoadingRss(state).isLoaded = true;
