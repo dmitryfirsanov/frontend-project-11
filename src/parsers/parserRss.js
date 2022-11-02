@@ -19,7 +19,7 @@ const parserRSS = (response) => {
 
     return { feed, posts };
   } catch {
-    throw new Error('parsing error');
+    throw new Error('Parsing Error');
   }
 };
 
