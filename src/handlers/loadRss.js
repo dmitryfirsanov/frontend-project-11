@@ -11,15 +11,19 @@ const loadRss = (url, state) => {
   const proxy = new URL(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`);
 
   axios.get(proxy)
-    .catch(() => {
-      state.feedback = state.i18next.t('loading.errors.errorNetWork');
-      watcherLoadingRss(state).isLoaded = false;
-      watcherActivityButton(state).lock = false;
-      throw new Error();
-    })
     .then((response) => parserRss(response))
-    .catch(() => {
-      state.feedback = state.i18next.t('loading.errors.errorResource');
+    .catch((error) => {
+      console.log(error.message);
+      switch (error.message) {
+        case 'Network Error':
+          state.feedback = state.i18next.t('loading.errors.errorNetWork');
+          break;
+        case 'Parsing Error':
+          state.feedback = state.i18next.t('loading.errors.errorResource');
+          break;
+        default:
+          throw new Error();
+      }
       watcherLoadingRss(state).isLoaded = false;
       watcherActivityButton(state).lock = false;
       throw new Error();
