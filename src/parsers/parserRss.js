@@ -7,7 +7,7 @@ const parserRSS = (response) => {
       description: data.querySelector('channel description').textContent,
     };
 
-    const topics = Array.from(data.querySelectorAll('item')).map((item) => {
+    const posts = Array.from(data.querySelectorAll('item')).map((item) => {
       const top = {
         title: item.querySelector('title').textContent,
         link: item.querySelector('link').textContent,
@@ -17,7 +17,7 @@ const parserRSS = (response) => {
       return top;
     });
 
-    return { feed, topics };
+    return { feed, posts };
   } catch {
     throw new Error('parsing error');
   }
