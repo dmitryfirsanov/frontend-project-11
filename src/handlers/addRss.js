@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import validateForm from '../validators/formValidator.js';
 import loadRss from './loadRss.js';
-import { watcherFeedback } from '../view/watchers.js';
+import { watcherFeedback, watcherActivityButton } from '../view/watchers.js';
 
 export default (state) => {
   const form = document.querySelector('.rss-form');
@@ -19,6 +19,7 @@ export default (state) => {
         throw new Error();
       })
       .then(() => {
+        watcherActivityButton(state).lock = true;
         loadRss(content, state);
       });
   });
