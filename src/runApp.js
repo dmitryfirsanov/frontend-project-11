@@ -1,4 +1,5 @@
 import './styles.scss';
+import 'bootstrap';
 import i18next from 'i18next';
 import languages from './locales/languages.js';
 import app from './app';
@@ -23,8 +24,13 @@ promise
         isLoaded: null,
         resources: [],
         feeds: [],
-        topics: [],
+        posts: [],
       },
+      uiState: {
+        viewedPost: {},
+        isRead: [],
+      },
+      lockButton: false,
     };
 
     return state;
