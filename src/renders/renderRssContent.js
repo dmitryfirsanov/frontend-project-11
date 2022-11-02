@@ -1,3 +1,5 @@
+import renderOfReadPosts from './renderOfReadPosts.js';
+
 export const renderPosts = (topics, state) => {
   const cardName = document.querySelector('.posts .card-body h2');
   cardName.textContent = state.i18next.t('content.posts');
@@ -16,6 +18,7 @@ export const renderPosts = (topics, state) => {
 
     listOfPosts.append(post);
   });
+  renderOfReadPosts(state.uiState.isRead);
 };
 
 export const renderFeeds = (state) => {
