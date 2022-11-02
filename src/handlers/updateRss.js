@@ -2,8 +2,9 @@
 import axios from 'axios';
 import { differenceWith, isEqual, isEmpty } from 'lodash';
 import parserRSS from '../parsers/parserRss.js';
-import getIdForTopics from './getIdForTopics.js';
+import getIdForPosts from './getIdForPosts.js';
 import { renderPosts } from '../renders/renderRssContent.js';
+import { handlerOfLinkOpeningBtn, handlerOfOpenModalWindow } from './modalWindow.js';
 
 const updateRss = (state) => {
   setTimeout(() => {
@@ -25,18 +26,20 @@ const updateRss = (state) => {
 
     Promise.all(promises)
       .then((parsedRss) => {
-        parsedRss.forEach(({ topics }) => {
-          const oldTopicsLinks = state.rssContent.topics.map((topic) => topic.link);
-          const allTopicsLinks = topics.map((topic) => topic.link);
-          const newTopicsLinks = differenceWith(allTopicsLinks, oldTopicsLinks, isEqual);
-          if (isEmpty(newTopicsLinks)) return;
+        parsedRss.forEach(({ posts }) => {
+          const oldPostsLinks = state.rssContent.posts.map((post) => post.link);
+          const allPostsLinks = posts.map((post) => post.link);
+          const newPostsLinks = differenceWith(allPostsLinks, oldPostsLinks, isEqual);
+          if (isEmpty(newPostsLinks)) return;
 
-          const newTopics = newTopicsLinks
-            .map((link) => topics.find((topic) => topic.link === link));
+          const newPosts = newPostsLinks
+            .map((link) => posts.find((post) => post.link === link));
 
-          state.rssContent.topics.unshift(...newTopics);
-          getIdForTopics(state.rssContent.topics);
-          renderPosts(state.rssContent.topics, state);
+          state.rssContent.posts.unshift(...newPosts);
+          getIdForPosts(state.rssContent.posts);
+          renderPosts(state.rssContent.posts, state);
+          handlerOfLinkOpeningBtn(state);
+          handlerOfOpenModalWindow(state);
         });
       })
       .then(() => {
