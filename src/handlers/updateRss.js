@@ -13,13 +13,18 @@ const updateRss = (state) => {
     // eslint-disable-next-line arrow-body-style
     const promises = state.rssContent.resources.map((resource) => {
       return axios.get(`${proxy}${resource}`)
-        .catch(() => {
-          state.feedback = state.i18next.t('loading.errors.errorNetWork');
-          throw new Error();
-        })
         .then((response) => parserRSS(response))
-        .catch(() => {
-          state.feedback = state.i18next.t('loading.errors.errorResource');
+        .catch((error) => {
+          switch (error.message) {
+            case 'Network Error':
+              state.feedback = state.i18next.t('loading.errors.errorNetWork');
+              break;
+            case 'Parsing Error':
+              state.feedback = state.i18next.t('loading.errors.errorResource');
+              break;
+            default:
+              throw new Error();
+          }
           throw new Error();
         });
     });
