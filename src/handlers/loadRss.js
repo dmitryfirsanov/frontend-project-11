@@ -13,7 +13,6 @@ const loadRss = (url, state) => {
   axios.get(proxy)
     .then((response) => parserRss(response))
     .catch((error) => {
-      console.log(error.message);
       switch (error.message) {
         case 'Network Error':
           state.feedback = state.i18next.t('loading.errors.errorNetWork');
