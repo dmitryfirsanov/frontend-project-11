@@ -1,19 +1,19 @@
 import renderOfReadPosts from './renderOfReadPosts.js';
 
-export const renderPosts = (topics, state) => {
+export const renderPosts = (state, i18n) => {
   const cardName = document.querySelector('.posts .card-body h2');
-  cardName.textContent = state.i18next.t('content.posts');
+  cardName.textContent = i18n.t('content.posts');
 
   const listOfPosts = document.querySelector('.posts .list-group');
   listOfPosts.innerHTML = '';
 
-  topics.forEach((topic) => {
+  state.rssContent.topics.forEach((topic) => {
     const post = document.createElement('li');
 
     post.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     post.innerHTML = `
     <a class="fw-bold" href=${topic.link} data-id=${topic.id} target="_blank" rel="noopener noreferrer">${topic.title}</a>
-    <button type="button" class="btn btn-outline-primary btn-sm" data-id="${topic.id}" data-bs-toggle="modal" data-bs-target="#modal">${state.i18next.t('content.view')}</button>
+    <button type="button" class="btn btn-outline-primary btn-sm" data-id="${topic.id}" data-bs-toggle="modal" data-bs-target="#modal">${i18n.t('content.view')}</button>
     `;
 
     listOfPosts.append(post);
@@ -21,9 +21,9 @@ export const renderPosts = (topics, state) => {
   renderOfReadPosts(state.uiState.isRead);
 };
 
-export const renderFeeds = (state) => {
+export const renderFeeds = (state, i18n) => {
   const cardName = document.querySelector('.feeds .card-body h2');
-  cardName.textContent = state.i18next.t('content.feeds');
+  cardName.textContent = i18n.t('content.feeds');
 
   const listOfFeeds = document.querySelector('.feeds .list-group');
   listOfFeeds.innerHTML = '';
@@ -32,11 +32,15 @@ export const renderFeeds = (state) => {
     const feed = document.createElement('li');
     feed.classList.add('list-group-item', 'border-0', 'border-end-0');
 
-    feed.innerHTML = `
-    <h3 class="h6 m-0">${title}</h3>
-    <p class="m-0 small text-black-50">${description}</p>
-    `;
+    const header = document.createElement('h3');
+    header.classList.add('h6', 'm-0');
+    header.textContent = title;
 
+    const definition = document.createElement('p');
+    definition.classList.add('m-0', 'small', 'text-black-50');
+    definition.textContent = description;
+
+    feed.append(header, definition);
     listOfFeeds.append(feed);
   });
 };
