@@ -1,26 +1,26 @@
 /* eslint-disable no-param-reassign */
 import validateForm from '../validators/formValidator.js';
 import loadRss from './loadRss.js';
-import { watcherFeedback, watcherActivityButton } from '../view/watchers.js';
+import watcher from '../view/watchers.js';
 
-export default (state) => {
+export default (state, i18n) => {
   const form = document.querySelector('.rss-form');
-  const input = document.querySelector('#url-input');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const content = input.value;
+    const formData = new FormData(e.target);
+    const content = formData.get('url');
 
-    validateForm(state.i18next, content, state.rssContent.resources)
+    validateForm(content, state.rssContent.resources)
+      .then(() => {
+        loadRss(content, state, i18n);
+      })
       .catch((error) => {
         state.feedback = error.message;
-        watcherFeedback(state).isValid = false;
+        watcher(state, i18n).isValid = false;
+        watcher(state, i18n).isValid = null;
         throw new Error();
-      })
-      .then(() => {
-        watcherActivityButton(state).lock = true;
-        loadRss(content, state);
       });
   });
 };
