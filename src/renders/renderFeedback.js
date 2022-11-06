@@ -1,8 +1,8 @@
-export default (status, message) => {
+export default (status, message, i18n) => {
   const input = document.querySelector('#url-input');
   const feedback = document.querySelector('.feedback');
 
-  feedback.textContent = message;
+  feedback.textContent = i18n.t(message);
 
   if (feedback.classList.contains('text-danger')) feedback.classList.remove('text-danger');
   else feedback.classList.remove('text-succsess');
