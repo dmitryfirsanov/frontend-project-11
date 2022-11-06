@@ -1,25 +1,22 @@
 /* eslint-disable no-param-reassign */
-import { watcherModalWindow } from '../view/watchers.js';
+import watcher from '../view/watchers.js';
 
-export const handlerOfLinkOpeningBtn = (state) => {
+export const handlerOfLinkOpeningBtn = (state, i18n) => {
   document.querySelectorAll('.posts a').forEach((btn) => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const link = e.target.href;
       const { id } = e.target.dataset;
-      watcherModalWindow(state.uiState).isRead.push(id);
-      window.open(link);
+      watcher(state.uiState, i18n).isRead.push(id);
     });
   });
 };
 
-export const handlerOfOpenModalWindow = (state) => {
+export const handlerOfOpenModalWindow = (state, i18n) => {
   const modal = document.getElementById('modal');
   modal.addEventListener('show.bs.modal', (e) => {
     const button = e.relatedTarget;
     const { id } = button.dataset;
-    const currentPost = state.rssContent.posts.find((post) => post.id === id);
-    watcherModalWindow(state.uiState).viewedPost = currentPost;
-    watcherModalWindow(state.uiState).isRead.push(id);
+    const currentPost = state.rssContent.topics.find((topic) => topic.id === id);
+    watcher(state.uiState, i18n).viewedPost = currentPost;
+    watcher(state.uiState, i18n).isRead.push(id);
   });
 };
