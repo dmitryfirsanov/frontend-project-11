@@ -1,13 +1,13 @@
 import * as yup from 'yup';
 
-const validateForm = (i18next, content, listOfFeeds) => {
+const validateForm = (content, listOfFeeds) => {
   yup.setLocale({
     mixed: {
-      notOneOf: i18next.t('validation.errors.errorUniqRSSUrl'),
+      notOneOf: 'validation.errors.errorUniqRSSUrl',
     },
     string: {
-      url: i18next.t('validation.errors.errorURL'),
-      min: i18next.t('validation.errors.errorRequared'),
+      url: 'validation.errors.errorURL',
+      min: 'validation.errors.errorRequared',
     },
   });
 
