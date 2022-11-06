@@ -15,6 +15,12 @@ export default {
         },
         isLoaded: 'RSS успешно загружен',
       },
+      update: {
+        errors: {
+          errorNetWork: 'Не удалось обновить: ошибка сети',
+          errorResource: 'Не удалось обновить: ресурс не содержит валидный RSS',
+        },
+      },
       content: {
         feeds: 'Фиды',
         posts: 'Посты',
