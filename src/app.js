@@ -20,7 +20,7 @@ i18n.init({
 
 const state = {
   feedback: '',
-  isValid: null,
+  isError: null,
   rssContent: {
     loading: null,
     updating: null,
@@ -58,16 +58,16 @@ const getIdForTopics = (topics) => {
   });
 };
 
-const handlerOfLinkOpeningBtn = () => {
-  document.querySelectorAll('.posts a').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+const openLink = () => {
+  document.querySelectorAll('.posts a').forEach((link) => {
+    link.addEventListener('click', (e) => {
       const { id } = e.target.dataset;
       watcher(state.uiState, i18n).isRead.push(id);
     });
   });
 };
 
-const handlerOfOpenModalWindow = () => {
+const openModalWindow = () => {
   const modal = document.getElementById('modal');
   modal.addEventListener('show.bs.modal', (e) => {
     const button = e.relatedTarget;
@@ -75,6 +75,55 @@ const handlerOfOpenModalWindow = () => {
     const currentPost = state.rssContent.topics.find((topic) => topic.id === id);
     watcher(state.uiState, i18n).viewedPost = currentPost;
     watcher(state.uiState, i18n).isRead.push(id);
+  });
+};
+
+const addRss = () => {
+  const form = document.querySelector('.rss-form');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const content = formData.get('url');
+
+    validateForm(content, state.rssContent.resources)
+      .then(() => {
+        watcher(state, i18n).loading = 'sending';
+        const proxy = new URL(`https://allorigins.hexlet.app/get?disableCache=true&url=${content}`);
+        return axios.get(proxy);
+      })
+      .then((response) => parserRss(response))
+      .then(({ feed, topics }) => {
+        state.rssContent.resources.unshift(content);
+        state.rssContent.feeds.unshift(feed);
+        state.rssContent.topics.unshift(...topics);
+        getIdForTopics(state.rssContent.topics);
+
+        state.isError = false;
+        watcher(state, i18n).feedback = 'loading.isLoaded';
+        watcher(state, i18n).loading = 'finished';
+
+        openLink();
+        openModalWindow();
+      })
+      .catch((error) => {
+        state.isError = true;
+        switch (error.name) {
+          case 'AxiosError':
+            watcher(state, i18n).feedback = 'loading.errors.errorNetWork';
+            break;
+          case 'ParsingError':
+            watcher(state, i18n).feedback = 'loading.errors.errorResource';
+            break;
+          case 'ValidationError':
+            watcher(state, i18n).feedback = error.message;
+            break;
+          default:
+            throw new Error('UnknownError');
+        }
+        watcher(state, i18n).loading = 'failed';
+      });
   });
 };
 
@@ -113,62 +162,13 @@ const updateRss = () => {
         state.rssContent.topics.unshift(...newTopics);
         getIdForTopics(state.rssContent.topics);
         watcher(state, i18n).updating = 'updated';
-        handlerOfLinkOpeningBtn();
-        handlerOfOpenModalWindow();
+
+        openLink();
+        openModalWindow();
       });
     });
 
   setTimeout(() => updateRss(), 5000);
-};
-
-const addRss = () => {
-  const form = document.querySelector('.rss-form');
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const content = formData.get('url');
-
-    validateForm(content, state.rssContent.resources)
-      .then(() => {
-        watcher(state, i18n).loading = 'sending';
-        const proxy = new URL(`https://allorigins.hexlet.app/get?disableCache=true&url=${content}`);
-        return axios.get(proxy);
-      })
-      .then((response) => parserRss(response))
-      .then(({ feed, topics }) => {
-        state.rssContent.resources.unshift(content);
-        state.rssContent.feeds.unshift(feed);
-        state.rssContent.topics.unshift(...topics);
-        getIdForTopics(state.rssContent.topics);
-
-        state.isValid = true;
-        watcher(state, i18n).feedback = 'loading.isLoaded';
-        watcher(state, i18n).loading = 'finished';
-        handlerOfLinkOpeningBtn();
-        handlerOfOpenModalWindow();
-      })
-      .catch((error) => {
-        console.log(error.message);
-        state.isValid = false;
-        switch (error.name) {
-          case 'AxiosError':
-            watcher(state, i18n).feedback = 'loading.errors.errorNetWork';
-            break;
-          case 'ParsingError':
-            watcher(state, i18n).feedback = 'loading.errors.errorResource';
-            break;
-          case 'ValidationError':
-            watcher(state, i18n).feedback = error.message;
-            break;
-          default:
-            throw new Error('UnknownError');
-        }
-        watcher(state, i18n).loading = 'failed';
-        state.feedback = error.message;
-      });
-  });
 };
 
 export default () => {

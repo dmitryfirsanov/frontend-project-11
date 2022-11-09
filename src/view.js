@@ -8,7 +8,7 @@ export default (state, i18n) => {
   const watcher = onChange(state, (path, value) => {
     switch (path) {
       case 'feedback':
-        renderFeedback(state.isValid, value, i18n);
+        renderFeedback(state.isError, value, i18n);
         break;
       case 'loading':
         switch (value) {
