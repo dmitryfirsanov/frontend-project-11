@@ -2,19 +2,19 @@ const feedback = document.querySelector('.feedback');
 const input = document.querySelector('#url-input');
 const button = document.querySelector('form button');
 
-const renderFeedback = (status, message, i18n) => {
+const renderFeedback = (isError, message, i18n) => {
   feedback.textContent = i18n.t(message);
 
   if (feedback.classList.contains('text-danger')) feedback.classList.remove('text-danger');
   else feedback.classList.remove('text-succsess');
 
-  if (status) {
+  if (isError) {
+    input.classList.add('is-invalid');
+    feedback.classList.add('text-danger');
+  } else {
     if (input.classList.contains('is-invalid')) input.classList.remove('is-invalid');
     feedback.classList.add('text-success');
     input.value = '';
-  } else {
-    input.classList.add('is-invalid');
-    feedback.classList.add('text-danger');
   }
 
   input.focus();
@@ -61,15 +61,28 @@ const renderPosts = (state, i18n) => {
 
   state.rssContent.topics.forEach((topic) => {
     const post = document.createElement('li');
-
     post.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-    post.innerHTML = `
-    <a class="fw-bold" href=${topic.link} data-id=${topic.id} target="_blank" rel="noopener noreferrer">${topic.title}</a>
-    <button type="button" class="btn btn-outline-primary btn-sm" data-id="${topic.id}" data-bs-toggle="modal" data-bs-target="#modal">${i18n.t('content.view')}</button>
-    `;
 
+    const title = document.createElement('a');
+    title.classList.add('fw-bold');
+    title.href = topic.link;
+    title.dataset.id = topic.id;
+    title.target = '_blank';
+    title.rel = 'noopener noreferrer';
+    title.textContent = topic.title;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    btn.dataset.id = topic.id;
+    btn.dataset.bsToggle = 'modal';
+    btn.dataset.bsTarget = '#modal';
+    btn.textContent = i18n.t('content.view');
+
+    post.append(title, btn);
     listOfPosts.append(post);
   });
+
   renderOfReadPosts(state.uiState.isRead);
 };
 
