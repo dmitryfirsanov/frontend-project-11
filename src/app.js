@@ -11,29 +11,6 @@ import languages from './locales/languages.js';
 import parserRss from './parserRss.js';
 import watcher from './view.js';
 
-const i18n = i18next.createInstance();
-i18n.init({
-  lng: 'ru',
-  debug: true,
-  resources: languages.ru,
-});
-
-const state = {
-  feedback: '',
-  isError: null,
-  rssContent: {
-    loading: null,
-    updating: null,
-    resources: [],
-    feeds: [],
-    topics: [],
-  },
-  uiState: {
-    viewedPost: {},
-    isRead: [],
-  },
-};
-
 const validateForm = (content, listOfFeeds) => {
   yup.setLocale({
     mixed: {
@@ -50,24 +27,20 @@ const validateForm = (content, listOfFeeds) => {
   return schema.validate(content);
 };
 
-const getIdForTopics = (topics) => {
+const setIdForTopics = (topics) => {
   topics.forEach((topic) => {
-    if (!Object.prototype.hasOwnProperty.call(topic, 'id')) {
-      topic.id = uniqueId();
-    }
+    topic.id = uniqueId();
   });
 };
 
-const openLink = () => {
-  document.querySelectorAll('.posts a').forEach((link) => {
-    link.addEventListener('click', (e) => {
-      const { id } = e.target.dataset;
-      watcher(state.uiState, i18n).isRead.push(id);
-    });
+const handlerOfTheReadLink = (state, i18n) => {
+  document.querySelector('.posts').addEventListener('click', (e) => {
+    const { id } = e.target.dataset;
+    watcher(state.uiState, i18n).isRead.push(id);
   });
 };
 
-const openModalWindow = () => {
+const openModalWindow = (state, i18n) => {
   const modal = document.getElementById('modal');
   modal.addEventListener('show.bs.modal', (e) => {
     const button = e.relatedTarget;
@@ -78,7 +51,7 @@ const openModalWindow = () => {
   });
 };
 
-const addRss = () => {
+const addRss = (state, i18n) => {
   const form = document.querySelector('.rss-form');
 
   form.addEventListener('submit', (e) => {
@@ -97,15 +70,16 @@ const addRss = () => {
       .then(({ feed, topics }) => {
         state.rssContent.resources.unshift(content);
         state.rssContent.feeds.unshift(feed);
+
+        setIdForTopics(topics);
         state.rssContent.topics.unshift(...topics);
-        getIdForTopics(state.rssContent.topics);
 
         state.isError = false;
         watcher(state, i18n).feedback = 'loading.isLoaded';
         watcher(state, i18n).loading = 'finished';
 
-        openLink();
-        openModalWindow();
+        handlerOfTheReadLink(state, i18n);
+        openModalWindow(state, i18n);
       })
       .catch((error) => {
         state.isError = true;
@@ -127,19 +101,20 @@ const addRss = () => {
   });
 };
 
-const updateRss = () => {
+const updateRss = (state, i18n) => {
   const proxy = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
+  console.log('object');
 
   // eslint-disable-next-line arrow-body-style
   const promises = state.rssContent.resources.map((resource) => {
     return axios.get(`${proxy}${resource}`)
       .then((response) => parserRss(response))
       .catch((error) => {
-        switch (error.message) {
-          case 'Network Error':
+        switch (error.name) {
+          case 'AxiosError':
             state.feedback = 'update.errors.errorNetWork';
             break;
-          case 'Parsing Error':
+          case 'ParsingError':
             state.feedback = 'update.errors.errorResource';
             break;
           default:
@@ -159,19 +134,43 @@ const updateRss = () => {
         const newTopics = newTopicsLinks
           .map((link) => topics.find((topic) => topic.link === link));
 
+        setIdForTopics(newTopics);
         state.rssContent.topics.unshift(...newTopics);
-        getIdForTopics(state.rssContent.topics);
+
         watcher(state, i18n).updating = 'updated';
 
-        openLink();
-        openModalWindow();
+        handlerOfTheReadLink(state, i18n);
+        openModalWindow(state, i18n);
       });
     });
 
-  setTimeout(() => updateRss(), 5000);
+  setTimeout(() => updateRss(state, i18n), 5000);
 };
 
 export default () => {
-  addRss();
-  updateRss();
+  const i18n = i18next.createInstance();
+  i18n.init({
+    lng: 'ru',
+    debug: true,
+    resources: languages.ru,
+  });
+
+  const state = {
+    feedback: '',
+    isError: null,
+    rssContent: {
+      loading: null,
+      updating: null,
+      resources: [],
+      feeds: [],
+      topics: [],
+    },
+    uiState: {
+      viewedPost: {},
+      isRead: [],
+    },
+  };
+
+  addRss(state, i18n);
+  updateRss(state, i18n);
 };
