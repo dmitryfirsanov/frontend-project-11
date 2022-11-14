@@ -18,7 +18,7 @@ const validateForm = (content, listOfFeeds) => {
     },
     string: {
       url: 'validation.errors.errorURL',
-      min: 'validation.errors.errorRequared',
+      min: 'validation.errors.errorRequired',
     },
   });
 

@@ -5,7 +5,7 @@ export default {
         errors: {
           errorURL: 'Ссылка должна быть валидным URL',
           errorUniqRssUrl: 'RSS уже существует',
-          errorRequared: 'Не должно быть пустым',
+          errorRequired: 'Не должно быть пустым',
         },
       },
       loading: {
