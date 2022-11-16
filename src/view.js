@@ -5,11 +5,12 @@ import {
 } from './render.js';
 
 export default (state, i18n) => onChange(state, (path, value) => {
+  console.log(path, value);
   switch (path) {
     case 'feedback':
       renderFeedback(state.isError, value, i18n);
       break;
-    case 'loading':
+    case 'rssContent.loading':
       switch (value) {
         case 'sending':
           renderLockForm();
@@ -26,7 +27,7 @@ export default (state, i18n) => onChange(state, (path, value) => {
           throw new Error();
       }
       break;
-    case 'updating':
+    case 'rssContent.updating':
       switch (value) {
         case 'requested':
           break;
@@ -40,10 +41,10 @@ export default (state, i18n) => onChange(state, (path, value) => {
           throw new Error();
       }
       break;
-    case 'viewedPost':
+    case 'uiState.viewedPost':
       renderModalWindow(value);
       break;
-    case 'isRead': {
+    case 'uiState.isRead': {
       renderOfReadPosts(value);
       break;
     }
