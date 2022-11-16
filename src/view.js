@@ -7,7 +7,7 @@ import {
 export default (state, i18n) => onChange(state, (path, value) => {
   console.log(path, value);
   switch (path) {
-    case 'feedback':
+    case 'errors':
       renderFeedback(state.isError, value, i18n);
       break;
     case 'rssContent.loading':
@@ -16,6 +16,7 @@ export default (state, i18n) => onChange(state, (path, value) => {
           renderLockForm();
           break;
         case 'finished':
+          renderFeedback(state.isError, 'loading.isLoaded', i18n);
           renderFeeds(state, i18n);
           renderPosts(state, i18n);
           renderUnlockForm();
