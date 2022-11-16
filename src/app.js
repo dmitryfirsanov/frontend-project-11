@@ -9,7 +9,7 @@ import axios from 'axios';
 import i18next from 'i18next';
 import languages from './locales/languages.js';
 import parserRss from './parserRss.js';
-import view from './view.js';
+import watcher from './view.js';
 
 const validateForm = (content, listOfFeeds) => {
   yup.setLocale({
@@ -33,25 +33,25 @@ const setIdForTopics = (topics) => {
   });
 };
 
-const handlerOfTheReadPost = (watcher) => {
+const handlerOfTheReadPost = (watchedState) => {
   document.querySelector('.posts').addEventListener('click', (e) => {
     console.log('click');
     const { id } = e.target.dataset;
-    watcher.uiState.isRead.push(id);
+    watchedState.uiState.isRead.push(id);
   });
 };
 
-const openModalWindow = (state, watcher) => {
+const openModalWindow = (state, watchedState) => {
   const modal = document.getElementById('modal');
   modal.addEventListener('show.bs.modal', (e) => {
     const button = e.relatedTarget;
     const { id } = button.dataset;
     const currentPost = state.rssContent.topics.find((topic) => topic.id === id);
-    watcher.uiState.viewedPost = currentPost;
+    watchedState.uiState.viewedPost = currentPost;
   });
 };
 
-const addRss = (state, watcher) => {
+const addRss = (state, watchedState) => {
   const form = document.querySelector('.rss-form');
 
   form.addEventListener('submit', (e) => {
@@ -62,7 +62,7 @@ const addRss = (state, watcher) => {
 
     validateForm(content, state.rssContent.resources)
       .then(() => {
-        watcher.rssContent.loading = 'sending';
+        watchedState.rssContent.loading = 'sending';
         const proxy = new URL(`https://allorigins.hexlet.app/get?disableCache=true&url=${content}`);
         return axios.get(proxy);
       })
@@ -75,33 +75,32 @@ const addRss = (state, watcher) => {
         state.rssContent.topics.unshift(...topics);
 
         state.isError = false;
-        watcher.feedback = 'loading.isLoaded';
-        watcher.rssContent.loading = 'finished';
+        watchedState.rssContent.loading = 'finished';
 
-        handlerOfTheReadPost(watcher);
-        openModalWindow(state, watcher);
+        handlerOfTheReadPost(watchedState);
+        openModalWindow(state, watchedState);
       })
       .catch((error) => {
         state.isError = true;
         switch (error.name) {
           case 'AxiosError':
-            watcher.feedback = 'loading.errors.errorNetWork';
+            watchedState.errors = 'loading.errors.errorNetWork';
             break;
           case 'ParsingError':
-            watcher.feedback = 'loading.errors.errorResource';
+            watchedState.errors = 'loading.errors.errorResource';
             break;
           case 'ValidationError':
-            watcher.feedback = error.message;
+            watchedState.errors = error.message;
             break;
           default:
             throw new Error('UnknownError');
         }
-        watcher.rssContent.loading = 'failed';
+        watchedState.rssContent.loading = 'failed';
       });
   });
 };
 
-const updateRss = (state, watcher) => {
+const updateRss = (state, watchedState) => {
   const proxy = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
 
   // eslint-disable-next-line arrow-body-style
@@ -111,10 +110,10 @@ const updateRss = (state, watcher) => {
       .catch((error) => {
         switch (error.name) {
           case 'AxiosError':
-            state.feedback = 'update.errors.errorNetWork';
+            state.errors = 'update.errors.errorNetWork';
             break;
           case 'ParsingError':
-            state.feedback = 'update.errors.errorResource';
+            state.errors = 'update.errors.errorResource';
             break;
           default:
             throw new Error();
@@ -136,14 +135,14 @@ const updateRss = (state, watcher) => {
         setIdForTopics(newTopics);
         state.rssContent.topics.unshift(...newTopics);
 
-        watcher.rssContent.updating = 'updated';
+        watchedState.rssContent.updating = 'updated';
 
-        handlerOfTheReadPost(watcher);
-        openModalWindow(state, watcher);
+        handlerOfTheReadPost(watchedState);
+        openModalWindow(state, watchedState);
       });
     });
 
-  setTimeout(() => updateRss(state, watcher), 5000);
+  setTimeout(() => updateRss(state, watchedState), 5000);
 };
 
 export default () => {
@@ -158,7 +157,7 @@ export default () => {
     feedback: '',
     isError: null,
     rssContent: {
-      loading: null,
+      errors: null,
       updating: null,
       resources: [],
       feeds: [],
@@ -170,7 +169,7 @@ export default () => {
     },
   };
 
-  const watcher = view(state, i18n);
-  addRss(state, watcher);
-  updateRss(state, watcher);
+  const watchedState = watcher(state, i18n);
+  addRss(state, watchedState);
+  updateRss(state, watchedState);
 };
