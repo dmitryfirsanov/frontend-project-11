@@ -9,7 +9,7 @@ import axios from 'axios';
 import i18next from 'i18next';
 import languages from './locales/languages.js';
 import parserRss from './parserRss.js';
-import watcher from './view.js';
+import view from './view.js';
 
 const validateForm = (content, listOfFeeds) => {
   yup.setLocale({
@@ -33,25 +33,25 @@ const setIdForTopics = (topics) => {
   });
 };
 
-const handlerOfTheReadLink = (state, i18n) => {
+const handlerOfTheReadPost = (watcher) => {
   document.querySelector('.posts').addEventListener('click', (e) => {
+    console.log('click');
     const { id } = e.target.dataset;
-    watcher(state.uiState, i18n).isRead.push(id);
+    watcher.uiState.isRead.push(id);
   });
 };
 
-const openModalWindow = (state, i18n) => {
+const openModalWindow = (state, watcher) => {
   const modal = document.getElementById('modal');
   modal.addEventListener('show.bs.modal', (e) => {
     const button = e.relatedTarget;
     const { id } = button.dataset;
     const currentPost = state.rssContent.topics.find((topic) => topic.id === id);
-    watcher(state.uiState, i18n).viewedPost = currentPost;
-    watcher(state.uiState, i18n).isRead.push(id);
+    watcher.uiState.viewedPost = currentPost;
   });
 };
 
-const addRss = (state, i18n) => {
+const addRss = (state, watcher) => {
   const form = document.querySelector('.rss-form');
 
   form.addEventListener('submit', (e) => {
@@ -62,7 +62,7 @@ const addRss = (state, i18n) => {
 
     validateForm(content, state.rssContent.resources)
       .then(() => {
-        watcher(state, i18n).loading = 'sending';
+        watcher.rssContent.loading = 'sending';
         const proxy = new URL(`https://allorigins.hexlet.app/get?disableCache=true&url=${content}`);
         return axios.get(proxy);
       })
@@ -75,35 +75,34 @@ const addRss = (state, i18n) => {
         state.rssContent.topics.unshift(...topics);
 
         state.isError = false;
-        watcher(state, i18n).feedback = 'loading.isLoaded';
-        watcher(state, i18n).loading = 'finished';
+        watcher.feedback = 'loading.isLoaded';
+        watcher.rssContent.loading = 'finished';
 
-        handlerOfTheReadLink(state, i18n);
-        openModalWindow(state, i18n);
+        handlerOfTheReadPost(watcher);
+        openModalWindow(state, watcher);
       })
       .catch((error) => {
         state.isError = true;
         switch (error.name) {
           case 'AxiosError':
-            watcher(state, i18n).feedback = 'loading.errors.errorNetWork';
+            watcher.feedback = 'loading.errors.errorNetWork';
             break;
           case 'ParsingError':
-            watcher(state, i18n).feedback = 'loading.errors.errorResource';
+            watcher.feedback = 'loading.errors.errorResource';
             break;
           case 'ValidationError':
-            watcher(state, i18n).feedback = error.message;
+            watcher.feedback = error.message;
             break;
           default:
             throw new Error('UnknownError');
         }
-        watcher(state, i18n).loading = 'failed';
+        watcher.rssContent.loading = 'failed';
       });
   });
 };
 
-const updateRss = (state, i18n) => {
+const updateRss = (state, watcher) => {
   const proxy = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
-  console.log('object');
 
   // eslint-disable-next-line arrow-body-style
   const promises = state.rssContent.resources.map((resource) => {
@@ -137,14 +136,14 @@ const updateRss = (state, i18n) => {
         setIdForTopics(newTopics);
         state.rssContent.topics.unshift(...newTopics);
 
-        watcher(state, i18n).updating = 'updated';
+        watcher.rssContent.updating = 'updated';
 
-        handlerOfTheReadLink(state, i18n);
-        openModalWindow(state, i18n);
+        handlerOfTheReadPost(watcher);
+        openModalWindow(state, watcher);
       });
     });
 
-  setTimeout(() => updateRss(state, i18n), 5000);
+  setTimeout(() => updateRss(state, watcher), 5000);
 };
 
 export default () => {
@@ -171,6 +170,7 @@ export default () => {
     },
   };
 
-  addRss(state, i18n);
-  updateRss(state, i18n);
+  const watcher = view(state, i18n);
+  addRss(state, watcher);
+  updateRss(state, watcher);
 };
